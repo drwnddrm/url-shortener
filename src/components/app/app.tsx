@@ -1,13 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaCopy } from 'react-icons/fa';
+import { copyText } from '../../utils/utils';
+import { getShortenerApi } from '../../utils/api';
 
 const App = () => {
-  const copyText = (event: React.MouseEvent<HTMLElement>) => {
-    const text = event.currentTarget.previousSibling?.textContent;
-    if (text) {
-      navigator.clipboard.writeText(text);
-    }
+  const [url, setUrl] = useState('');
+  const [shortUrl, setShortUrl] = useState('');
+
+  const changeUrl = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUrl(event.currentTarget.value);
   };
+
+  const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log(url);
+
+    getShortenerApi(url);
+  };
+
+  // useEffect(() => {
+  //   getShortenerApi(url);
+  // }, [url, setUrl]);
 
   return (
     <>
@@ -15,9 +28,16 @@ const App = () => {
         <h1>LOGO</h1>
       </header>
       <section>
-        <form method='post'>
-          <label htmlFor='url'>Вставьте вашу ссылку:</label>
-          <input id='url' name='url' type='url' />
+        <form method='post' onSubmit={submitForm}>
+          <label htmlFor='url'>Вставить ссылку:</label>
+          <input
+            id='url'
+            name='url'
+            type='url'
+            value={url}
+            onChange={changeUrl}
+            required
+          />
           <button type='submit'>Получить короткую ссылку</button>
         </form>
       </section>
@@ -35,7 +55,7 @@ const App = () => {
                 <button onClick={copyText} children={<FaCopy />} />
               </div>
               <div>
-                <span>Короткая ссылка</span>
+                <span>{shortUrl === '' ? 'Короткая ссылка' : shortUrl}</span>
                 <button onClick={copyText} children={<FaCopy />} />
               </div>
             </li>
